@@ -13,7 +13,7 @@ namespace CalculatorProgram
             Console.WriteLine("------------------------\n");
 
             Calculator calculator = new Calculator();
-
+            calculator.LoadCalculationJson();
             while (!endApp)
             {
                 // Declare variable and set to empty.

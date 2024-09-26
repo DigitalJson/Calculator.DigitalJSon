@@ -10,14 +10,16 @@ namespace CalculatorLibrary
         public double Num1 { get; set; }
         public double Num2 { get; set; }
         public double Result { get; set; }
-        public string Operation { get; set; }
+        public string? Operation { get; set; }
 
     }
 
     public class Calculator
     {  
         int counter = 0;
+        string jsonFileLoc = "calculation.json";
         List<CalculationLog> calcLogList = new List<CalculationLog>();
+        List<CalculationLog> jsonList = new List<CalculationLog>();
         public double DoOperation(double num1, double num2, string op)
         {
             double result = double.NaN; // Default value is "not-a-number" if an operation, such as division, could result in an error.
@@ -53,16 +55,45 @@ namespace CalculatorLibrary
                 default:
                     break;
             }
-            calcLogList.Add(new CalculationLog { Num1 = num1, Num2 = num2, Operation = operationUsed, Result = result});
+            if (!File.Exists(jsonFileLoc))
+            {
+                calcLogList.Add(new CalculationLog { Num1 = num1, Num2 = num2, Operation = operationUsed, Result = result });
+            }
+            else
+            {
+                jsonList.Add(new CalculationLog { Num1 = num1, Num2 = num2, Operation = operationUsed, Result = result });
+            }
             counter++;
             return result;
         }
 
         public void SaveCalculationToJSon()
         {
-            string jsonFileLoc = "calculation.json";
-            string calcLogJson = JsonConvert.SerializeObject(calcLogList, Formatting.Indented);
-            File.WriteAllText(jsonFileLoc, calcLogJson);
+            if (!File.Exists(jsonFileLoc))
+            {
+                string calcLogJson = JsonConvert.SerializeObject(calcLogList, Formatting.Indented);
+                File.WriteAllText(jsonFileLoc, calcLogJson);
+            }
+            else
+            {
+                string calcLogJson = JsonConvert.SerializeObject(jsonList, Formatting.Indented);
+                File.WriteAllText(jsonFileLoc, calcLogJson);
+            }
+            
+        }
+
+        public void LoadCalculationJson()
+        {
+            if (File.Exists(jsonFileLoc))
+            {
+               string jsonFile = File.ReadAllText(jsonFileLoc);
+               jsonList = JsonConvert.DeserializeObject<List<CalculationLog>>(jsonFile);
+            }
+            else
+            {
+                Console.WriteLine("Error! File does not exist.");
+            }
+            
         }
 
     }
