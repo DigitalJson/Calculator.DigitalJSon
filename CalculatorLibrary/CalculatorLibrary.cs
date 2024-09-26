@@ -86,14 +86,43 @@ namespace CalculatorLibrary
         {
             if (File.Exists(jsonFileLoc))
             {
-               string jsonFile = File.ReadAllText(jsonFileLoc);
-               jsonList = JsonConvert.DeserializeObject<List<CalculationLog>>(jsonFile);
-            }
-            else
-            {
-                Console.WriteLine("Error! File does not exist.");
+                string? input = "";
+                string choice = "";
+                Console.WriteLine("List of previous calculations found. Would you like to use it? (y/n)");
+                do
+                {
+                    input = Console.ReadLine();
+                    if (input != null)
+                    {
+                        choice = input.ToLower();
+                        switch (choice)
+                        {
+                            case "y":
+                                Console.WriteLine("Using existing list...");
+                                string jsonFile = File.ReadAllText(jsonFileLoc);
+                                jsonList = JsonConvert.DeserializeObject<List<CalculationLog>>(jsonFile);
+                                break;
+                            case "n":
+                                DeleteJson();
+                                break;
+                            default:
+                                Console.WriteLine("Invalid input.");
+                                break;
+                        }
+                    }
+                } while (choice != "y" && choice != "n");
+               
             }
             
+        }
+
+        private void DeleteJson()
+        {
+            if (File.Exists(jsonFileLoc))
+            {
+                File.Delete(jsonFileLoc);
+                Console.WriteLine("File deleted successfully.");
+            }
         }
 
     }
