@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+
 
 namespace CalculatorLibrary
 {
@@ -14,12 +14,18 @@ namespace CalculatorLibrary
 
     }
 
+    public class CalculatorTracker
+    {
+        public int Counter = 0;
+    }
+
     public class Calculator
     {  
-        int counter = 0;
         string jsonFileLoc = "calculation.json";
+        string counterFileLoc = "counter.json";
         List<CalculationLog> calcLogList = new List<CalculationLog>();
         List<CalculationLog> jsonList = new List<CalculationLog>();
+        CalculatorTracker counter = new CalculatorTracker();
         public double DoOperation(double num1, double num2, string op)
         {
             double result = double.NaN; // Default value is "not-a-number" if an operation, such as division, could result in an error.
@@ -63,7 +69,19 @@ namespace CalculatorLibrary
             {
                 jsonList.Add(new CalculationLog { Num1 = num1, Num2 = num2, Operation = operationUsed, Result = result });
             }
-            counter++;
+            if (!File.Exists (counterFileLoc))
+            {
+                counter.Counter++;
+            }
+            else
+            {
+                string jsonCounter = File.ReadAllText(counterFileLoc);
+                int index = jsonCounter.IndexOf (": ");
+                string number = jsonCounter.Substring(index + 1).Trim().TrimEnd('\r', '\n', '}');
+                counter.Counter = Convert.ToInt32 (number);
+                counter.Counter++;
+            }
+            
             return result;
         }
 
@@ -79,7 +97,14 @@ namespace CalculatorLibrary
                 string calcLogJson = JsonConvert.SerializeObject(jsonList, Formatting.Indented);
                 File.WriteAllText(jsonFileLoc, calcLogJson);
             }
+            SaveCounterToJson();
             
+        }
+
+        private void SaveCounterToJson()
+        {
+            string counterLogJson = JsonConvert.SerializeObject(counter, Formatting.Indented);
+            File.WriteAllText(counterFileLoc, counterLogJson);
         }
 
         public void LoadCalculationJson()
@@ -115,14 +140,10 @@ namespace CalculatorLibrary
             }
             
         }
-
         private void DeleteJson()
         {
-            if (File.Exists(jsonFileLoc))
-            {
-                File.Delete(jsonFileLoc);
-                Console.WriteLine("File deleted successfully.");
-            }
+            File.Delete(jsonFileLoc);
+            Console.WriteLine("File deleted successfully.");
         }
 
     }
