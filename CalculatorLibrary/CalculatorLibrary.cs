@@ -1,5 +1,6 @@
 ﻿
 using Newtonsoft.Json;
+using System.Diagnostics.Metrics;
 
 
 namespace CalculatorLibrary
@@ -26,6 +27,7 @@ namespace CalculatorLibrary
         List<CalculationLog> calcLogList = new List<CalculationLog>();
         List<CalculationLog> jsonList = new List<CalculationLog>();
         CalculatorTracker counter = new CalculatorTracker();
+        public int calcCounter = 0;
         public double DoOperation(double num1, double num2, string op)
         {
             double result = double.NaN; // Default value is "not-a-number" if an operation, such as division, could result in an error.
@@ -43,7 +45,7 @@ namespace CalculatorLibrary
                     break;
                 case "m":
                     result = num1 * num2;
-                    operationUsed = "Multiplcation";
+                    operationUsed = "Multiplication";
                     break;
                 case "d":
                     //Ask the user to enter a non-zero divisor
@@ -81,6 +83,7 @@ namespace CalculatorLibrary
                 counter.Counter = Convert.ToInt32 (number);
                 counter.Counter++;
             }
+            calcCounter = counter.Counter;
             
             return result;
         }
@@ -146,6 +149,50 @@ namespace CalculatorLibrary
             Console.WriteLine("File deleted successfully.");
         }
 
+        public void ViewPreviousCalculations()
+        {
+            Console.WriteLine("Viewing previous calculations...");
+            string operationUsed = "";
+
+            if (File.Exists(jsonFileLoc))
+            {
+                for (int i = 0; i < jsonList.Count; i++)
+                {
+                    switch (jsonList[i].Operation)
+                    {
+                        case "Addition":
+                            operationUsed = "+";
+                            break;
+                        case "Subtraction":
+                            operationUsed = "-"; 
+                            break;
+                        case "Multiplication":
+                            operationUsed = "*";
+                            break;
+                        case "Division":
+                            operationUsed = "/";
+                            break;
+                    }
+                    Console.WriteLine($"{i + 1}. {jsonList[i].Num1} {operationUsed} {jsonList[i].Num2} = {jsonList[i].Result}");
+                }
+            }
+        }
+
+        public double UseResultAsOperand()
+        {
+            string? input = "";
+            int chosenCalc = 0;
+
+            Console.WriteLine("Enter the number at the left of the calculation of the result you wish to use.");
+            input = Console.ReadLine();
+            while (!int.TryParse(input, out chosenCalc) || (chosenCalc > jsonList.Count || chosenCalc < 1))
+            {
+                Console.WriteLine("Invald input. Please type the number at the left of the calculation you wish to choose.");
+                input = Console.ReadLine();
+            }
+            return jsonList[chosenCalc - 1].Result;
+
+        }
     }
 }
 

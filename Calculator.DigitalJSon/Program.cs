@@ -8,6 +8,8 @@ namespace CalculatorProgram
         static void Main(string[] args)
         {
             bool endApp = false;
+            string? input = "";
+            string choice = "";
             // Display title as the C# console calculator app.
             Console.WriteLine("Console Calculator in C#\r");
             Console.WriteLine("------------------------\n");
@@ -16,6 +18,50 @@ namespace CalculatorProgram
             calculator.LoadCalculationJson();
             while (!endApp)
             {
+                double previousResult = 0;
+                double cleanNum1 = 0;
+                double cleanNum2 = 0;
+                bool num1AlreadyUsed = false;
+                bool num2AlreadyUsed = false;
+                int chosenOperand = 0;
+
+                Console.WriteLine("Would you like to view the list? Type y and enter if yes and Type any other key and enter if no.");
+                input = Console.ReadLine();
+                if (input != null)
+                {
+                    choice = input.Trim().ToLower();
+                    if (choice == "y")
+                    {
+                        calculator.ViewPreviousCalculations();
+                        Console.WriteLine("Would you like to use any of the results here for your calculation now? Type y if yes and any other key for no.");
+                        input = Console.ReadLine();
+                        if (input != null)
+                        {
+                            choice = input.ToLower().Trim();
+                            if (choice == "y")
+                            {
+                                previousResult = calculator.UseResultAsOperand();
+                                Console.WriteLine("Now please choose where you would like to place the result. Type 1 if Operand 1 or 2 if Operand 2");
+                                input = Console.ReadLine();
+                                while (!int.TryParse(input, out chosenOperand) || (chosenOperand > 2 || chosenOperand < 1))
+                                {
+                                    Console.WriteLine("Invalid input. Please type either 1 if Operand 1 or 2 if Operand 2");
+                                    input = Console.ReadLine();
+                                }
+                                if (chosenOperand == 1)
+                                {
+                                    cleanNum1 = previousResult;
+                                    num1AlreadyUsed = true;
+                                }
+                                else if (chosenOperand == 2)
+                                {
+                                    cleanNum2 = previousResult;
+                                    num2AlreadyUsed = true;
+                                }
+                            }
+                        }
+                    }
+                }
                 // Declare variable and set to empty.
                 // Use Nullable types (with ?) to match type of System.Console.ReadLine
                 string? numInput1 = "";
@@ -23,27 +69,31 @@ namespace CalculatorProgram
                 double result = 0;
 
                 // Ask the user to type the first number.
-                Console.WriteLine("Type a number, then press Enter");
-                numInput1 = Console.ReadLine();
-
-                double cleanNum1 = 0;
-                while (!double.TryParse(numInput1, out cleanNum1))
+                if (!num1AlreadyUsed)
                 {
-                    Console.Write("This is not a valid input. Please enter a numeric value:");
+                    Console.WriteLine("Type a number, then press Enter (Operand 1)");
                     numInput1 = Console.ReadLine();
-                }
 
+                    while (!double.TryParse(numInput1, out cleanNum1))
+                    {
+                        Console.Write("This is not a valid input. Please enter a numeric value:");
+                        numInput1 = Console.ReadLine();
+                    }
+
+                }
                 // Ask the user to type the second number.
-                Console.WriteLine("Type a number, then press Enter");
-                numInput2 = Console.ReadLine();
-
-                double cleanNum2 = 0;
-                while (!double.TryParse(numInput2, out cleanNum2))
+                if (!num2AlreadyUsed)
                 {
-                    Console.Write("This is not a valid input. Please enter a numeric value:");
+                    Console.WriteLine("Type a number, then press Enter (Operand 2)");
                     numInput2 = Console.ReadLine();
-                }
 
+                    while (!double.TryParse(numInput2, out cleanNum2))
+                    {
+                        Console.Write("This is not a valid input. Please enter a numeric value:");
+                        numInput2 = Console.ReadLine();
+                    }
+
+                }
                 // Ask the user to choose an operator.
                 Console.WriteLine("Choose an operator from the following list:");
                 Console.WriteLine("\ta - Add");
@@ -75,6 +125,7 @@ namespace CalculatorProgram
                         Console.WriteLine("Oh no! An exception occured trying to do the math.\n - Details: " + e.Message);
                     }
                 }
+                Console.WriteLine($"Calculator used {calculator.calcCounter} times");
                 Console.WriteLine("------------------------\n");
 
                 // Wait for the user to respond before closing.
