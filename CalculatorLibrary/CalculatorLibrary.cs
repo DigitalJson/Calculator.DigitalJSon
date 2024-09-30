@@ -30,7 +30,7 @@ namespace CalculatorLibrary
         public int calcCounter = 0;
         bool loadCounterJsonAlready = false;
         string? input = "";
-        public double DoOperation(double num1, double num2, string op)
+        public double DoOperation(double num1, string op, double num2 = double.NaN)
         {
             double result = double.NaN; // Default value is "not-a-number" if an operation, such as division, could result in an error.
             // Use a switch statement to do the math.
@@ -63,27 +63,16 @@ namespace CalculatorLibrary
                     }
                     break;
                 case "sqr":
-                    Console.WriteLine("Which of the operand would you wish to get the square root of?");
-                    input = Console.ReadLine();
-                    while (!int.TryParse(input, out choice) || (choice > 2 || choice < 1))
-                    {
-                        Console.WriteLine("Invalid Input. Please type either 1 or 2 to choose which number you would like to get the square root of");
-                        input = Console.ReadLine();
-                    }
-                    if (choice == 1)
-                    {
-                        result = Math.Sqrt(num1);
-                    }
-                    else if (choice == 2)
-                    {
-                        num1 = num2;
-                        result = Math.Sqrt(num1);
-                    }
+                    result = Math.Sqrt(num1);
                     operationUsed = "Square Root";
                     break;
                 case "e":
                     result = Math.Pow(num1, num2);
                     operationUsed = "Exponential";
+                    break;
+                case "10x":
+                    result = Math.Pow(10, num1);
+                    operationUsed = "10x";
                     break;
                 // Return text for an incorrect option entry
                 default:
@@ -91,7 +80,7 @@ namespace CalculatorLibrary
             }
             if (!File.Exists(jsonFileLoc))
             {
-                if (operationUsed == "Square Root")
+                if (operationUsed == "Square Root" || operationUsed == "10x")
                 {
                     calcLogList.Add(new CalculationLog { Num1 = num1, Num2 = double.NaN, Operation = operationUsed, Result = result });
                 }
@@ -102,7 +91,7 @@ namespace CalculatorLibrary
             }
             else
             {
-                if (operationUsed == "Square Root")
+                if (operationUsed == "Square Root" || operationUsed == "10x")
                 {
                     jsonList.Add(new CalculationLog { Num1 = num1, Num2 = double.NaN, Operation = operationUsed, Result = result });
                 }
@@ -165,7 +154,7 @@ namespace CalculatorLibrary
 
         public void ViewPreviousCalculations()
         {
-            Console.WriteLine("Viewing previous calculations...");
+            Console.WriteLine("Showing previous calculations...");
             string operationUsed = "";
 
             if (File.Exists(jsonFileLoc))
@@ -192,6 +181,9 @@ namespace CalculatorLibrary
                         case "Exponential":
                             operationUsed = "^";
                             break;
+                        case "10x":
+                            operationUsed = "10^x";
+                            break;
                     }
                     if (operationUsed == "√")
                     {
@@ -200,6 +192,10 @@ namespace CalculatorLibrary
                     else if (operationUsed == "^")
                     {
                         Console.WriteLine($"{i + 1}. {jsonList[i].Num1}{operationUsed}{jsonList[i].Num2} = {jsonList[i].Result}");
+                    }
+                    else if (operationUsed == "10^x")
+                    {
+                        Console.WriteLine($"{i + 1}. 10^{jsonList[i].Num1} = {jsonList[i].Result}");
                     }
                     else
                     {
@@ -224,6 +220,8 @@ namespace CalculatorLibrary
             return jsonList[chosenCalc - 1].Result;
 
         }
+
+        
     }
 }
 

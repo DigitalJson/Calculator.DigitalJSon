@@ -46,58 +46,12 @@ namespace CalculatorProgram
 
 
             }
+            
             while (!endApp)
             {
-                double previousResult = 0;
                 double cleanNum1 = 0;
                 double cleanNum2 = 0;
-                bool num1AlreadyUsed = false;
-                bool num2AlreadyUsed = false;
-
-                int chosenOperand = 0;
                 previousCalculationsExist = File.Exists("calculation.json");
-
-                if (previousCalculationsExist)
-                {
-                        calculator.LoadCalculationJson();
-                    Console.WriteLine("Would you like to view the list? Type y and enter if yes and Type any other key and enter if no.");
-                    input = Console.ReadLine();
-                    if (input != null)
-                    {
-                        choice = input.Trim().ToLower();
-                        if (choice == "y")
-                        {
-                            calculator.ViewPreviousCalculations();
-                            Console.WriteLine("Would you like to use any of the results here for your calculation now? Type y if yes and any other key for no.");
-                            input = Console.ReadLine();
-                            if (input != null)
-                            {
-                                choice = input.ToLower().Trim();
-                                if (choice == "y")
-                                {
-                                    previousResult = calculator.UseResultAsOperand();
-                                    Console.WriteLine("Now please choose where you would like to place the result. Type 1 if Operand 1 or 2 if Operand 2");
-                                    input = Console.ReadLine();
-                                    while (!int.TryParse(input, out chosenOperand) || (chosenOperand > 2 || chosenOperand < 1))
-                                    {
-                                        Console.WriteLine("Invalid input. Please type either 1 if Operand 1 or 2 if Operand 2");
-                                        input = Console.ReadLine();
-                                    }
-                                    if (chosenOperand == 1)
-                                    {
-                                        cleanNum1 = previousResult;
-                                        num1AlreadyUsed = true;
-                                    }
-                                    else if (chosenOperand == 2)
-                                    {
-                                        cleanNum2 = previousResult;
-                                        num2AlreadyUsed = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
                
                 // Ask the user to choose an operator.
                 Console.WriteLine("Choose an operator from the following list:");
@@ -125,40 +79,108 @@ namespace CalculatorProgram
                     string? numInput1 = "";
                     string? numInput2 = "";
                     double result = 0;
+                    double previosResult = 0;
+                    bool previousResultUsed = false;
+                    bool num1Used = false;
+                    bool num2Used = false;
+                    int chosenOperand = 0;
 
-                    // Ask the user to type the first number.
-                    if (!num1AlreadyUsed)
+                    if (previousCalculationsExist)
                     {
-                        Console.WriteLine("Type a number, then press Enter (Operand 1)");
-                        numInput1 = Console.ReadLine();
-
-                        while (!double.TryParse(numInput1, out cleanNum1))
+                        calculator.LoadCalculationJson();
+                        Console.WriteLine("Would you like to reuse a result from a previous calculation? Type y and enter if yes and any other key if no.");
+                        input = Console.ReadLine();
+                        if (input != null)
                         {
-                            Console.Write("This is not a valid input. Please enter a numeric value:");
+                            choice = input.ToLower().Trim();
+                        }
+                        if (choice == "y")
+                        {
+                            calculator.ViewPreviousCalculations();
+                            previosResult = calculator.UseResultAsOperand();
+                            previousResultUsed = true;
+                        }
+                    }
+                    if (op == "sqr" || op == "10x")
+                    {
+                        if (!previousResultUsed)
+                        {
+                            Console.WriteLine("Type a number, then press Enter.");
                             numInput1 = Console.ReadLine();
+                            while (!double.TryParse(numInput1, out cleanNum1))
+                            {
+                                Console.Write("This is not a valid input. Please enter a numeric value:");
+                                numInput1 = Console.ReadLine();
+                            }
                         }
-
-                    }
-                    // Ask the user to type the second number.
-                    if (!num2AlreadyUsed)
-                    {
-                        Console.WriteLine("Type a number, then press Enter (Operand 2)");
-                        numInput2 = Console.ReadLine();
-
-                        while (!double.TryParse(numInput2, out cleanNum2))
+                        else if (previousResultUsed)
                         {
-                            Console.Write("This is not a valid input. Please enter a numeric value:");
-                            numInput2 = Console.ReadLine();
+                            cleanNum1 = previosResult;
                         }
-
+                        result = calculator.DoOperation(cleanNum1, op, cleanNum2);
+                        if (double.IsNaN(result))
+                        {
+                            Console.WriteLine("This operation will result in a mathematical error.\n");
+                        }
+                        else Console.WriteLine("Your result: {0:0.##}\n", result);
                     }
-                    result = calculator.DoOperation(cleanNum1, cleanNum2, op);
-                    if (double.IsNaN(result))
+                    else
                     {
-                        Console.WriteLine("This operation will result in a mathematical error.\n");
+                        if (previousResultUsed)
+                        {
+                            Console.WriteLine("Where would you like to use the previous result?");
+                            Console.WriteLine("Type 1 if Operand 1 or 2 if Operand 2 then press Enter.");
+                            input = Console.ReadLine();
+                            while (!int.TryParse(input, out chosenOperand) || (chosenOperand < 1 || chosenOperand > 2))
+                            {
+                                Console.WriteLine("Invalid input. Please enter either 1 if Operand 1 or 2 if Operand 2");
+                                input = Console.ReadLine();
+                            }
+                            if (chosenOperand == 1)
+                            {
+                                cleanNum1 = previosResult;
+                                num1Used = true;
+
+                            }
+                            else if (chosenOperand == 2)
+                            {
+                                cleanNum2 = previosResult;
+                                num2Used = true;
+                            }
+                        }
+                        // Ask the user to type the first number.
+                        if (!num1Used)
+                        {
+                            Console.WriteLine("Type a number, then press Enter (Operand 1)");
+                            numInput1 = Console.ReadLine();
+
+                            while (!double.TryParse(numInput1, out cleanNum1))
+                            {
+                                Console.Write("This is not a valid input. Please enter a numeric value:");
+                                numInput1 = Console.ReadLine();
+                            }
+                        }
+                        // Ask the user to type the second number.
+                        if (!num2Used)
+                        {
+                            Console.WriteLine("Type a number, then press Enter (Operand 2)");
+                            numInput2 = Console.ReadLine();
+
+                            while (!double.TryParse(numInput2, out cleanNum2))
+                            {
+                                Console.Write("This is not a valid input. Please enter a numeric value:");
+                                numInput2 = Console.ReadLine();
+                            }
+                        }
+                        result = calculator.DoOperation(cleanNum1, op, cleanNum2);
+                        if (double.IsNaN(result))
+                        {
+                            Console.WriteLine("This operation will result in a mathematical error.\n");
+                        }
+                        else Console.WriteLine("Your result: {0:0.##}\n", result);
                     }
-                    else Console.WriteLine("Your result: {0:0.##}\n", result);
                 }
+                    
                 catch (DivideByZeroException e)
                 {
                     Console.WriteLine("Oh no! An exception occured trying to do the math.\n - Details: " + e.Message);
