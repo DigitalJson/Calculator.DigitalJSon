@@ -81,6 +81,10 @@ namespace CalculatorLibrary
                     }
                     operationUsed = "Square Root";
                     break;
+                case "e":
+                    result = Math.Pow(num1, num2);
+                    operationUsed = "Exponential";
+                    break;
                 // Return text for an incorrect option entry
                 default:
                     break;
@@ -212,10 +216,17 @@ namespace CalculatorLibrary
                         case "Square Root":
                             operationUsed = "√";
                             break;
+                        case "Exponential":
+                            operationUsed = "^";
+                            break;
                     }
                     if (operationUsed == "√")
                     {
                         Console.WriteLine($"{i + 1}. {operationUsed}{jsonList[i].Num1} = {jsonList[i].Result}");
+                    }
+                    else if (operationUsed == "^")
+                    {
+                        Console.WriteLine($"{i + 1}. {jsonList[i].Num1}{operationUsed}{jsonList[i].Num2} = {jsonList[i].Result}");
                     }
                     else
                     {

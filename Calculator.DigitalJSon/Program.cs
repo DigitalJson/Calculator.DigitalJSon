@@ -107,12 +107,13 @@ namespace CalculatorProgram
                 Console.WriteLine("\tm - Multiply");
                 Console.WriteLine("\td - Divide");
                 Console.WriteLine("\tsqr - Square Root");
+                Console.WriteLine("\te - Taking the power");
                 Console.Write("Your option? ");
 
                 string? op = Console.ReadLine();
 
                 // Validate input is not null, and matches the pattern
-                if (op == null || !Regex.IsMatch(op, "[a|s|m|d|sqr]"))
+                if (op == null || !Regex.IsMatch(op, "[a|s|m|d|sqr|e]"))
                 {
                     Console.WriteLine("Error: Unrecognized input.");
                 }
