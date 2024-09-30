@@ -28,11 +28,14 @@ namespace CalculatorLibrary
         List<CalculationLog> jsonList = new List<CalculationLog>();
         CalculatorTracker counter = new CalculatorTracker();
         public int calcCounter = 0;
+        bool loadCounterJsonAlready = false;
+        string? input = "";
         public double DoOperation(double num1, double num2, string op)
         {
             double result = double.NaN; // Default value is "not-a-number" if an operation, such as division, could result in an error.
             // Use a switch statement to do the math.
             string operationUsed = "";
+            int choice = 0;
             switch (op)
             {
                 case "a":
@@ -59,24 +62,59 @@ namespace CalculatorLibrary
                         throw new DivideByZeroException("Mathematical Error. Dividing by Zero");
                     }
                     break;
+                case "sqr":
+                    Console.WriteLine("Which of the operand would you wish to get the square root of?");
+                    input = Console.ReadLine();
+                    while (!int.TryParse(input, out choice) || (choice > 2 || choice < 1))
+                    {
+                        Console.WriteLine("Invalid Input. Please type either 1 or 2 to choose which number you would like to get the square root of");
+                        input = Console.ReadLine();
+                    }
+                    if (choice == 1)
+                    {
+                        result = Math.Sqrt(num1);
+                    }
+                    else if (choice == 2)
+                    {
+                        num1 = num2;
+                        result = Math.Sqrt(num1);
+                    }
+                    operationUsed = "Square Root";
+                    break;
                 // Return text for an incorrect option entry
                 default:
                     break;
             }
             if (!File.Exists(jsonFileLoc))
             {
-                calcLogList.Add(new CalculationLog { Num1 = num1, Num2 = num2, Operation = operationUsed, Result = result });
+                if (operationUsed == "Square Root")
+                {
+                    calcLogList.Add(new CalculationLog { Num1 = num1, Num2 = double.NaN, Operation = operationUsed, Result = result });
+                }
+                else
+                {
+                    calcLogList.Add(new CalculationLog { Num1 = num1, Num2 = num2, Operation = operationUsed, Result = result });
+                }
             }
             else
             {
-                jsonList.Add(new CalculationLog { Num1 = num1, Num2 = num2, Operation = operationUsed, Result = result });
+                if (operationUsed == "Square Root")
+                {
+                    jsonList.Add(new CalculationLog { Num1 = num1, Num2 = double.NaN, Operation = operationUsed, Result = result });
+                }
+                else
+                {
+                    jsonList.Add(new CalculationLog { Num1 = num1, Num2 = num2, Operation = operationUsed, Result = result });
+                }
+                
             }
-            if (!File.Exists (counterFileLoc))
+            if (!File.Exists (counterFileLoc) || loadCounterJsonAlready)
             {
                 counter.Counter++;
             }
-            else
+            else if (File.Exists(counterFileLoc) && !loadCounterJsonAlready)
             {
+                loadCounterJsonAlready = true;
                 string jsonCounter = File.ReadAllText(counterFileLoc);
                 int index = jsonCounter.IndexOf (": ");
                 string number = jsonCounter.Substring(index + 1).Trim().TrimEnd('\r', '\n', '}');
@@ -114,7 +152,6 @@ namespace CalculatorLibrary
         {
             if (File.Exists(jsonFileLoc))
             {
-                string? input = "";
                 string choice = "";
                 Console.WriteLine("List of previous calculations found. Would you like to use it? (y/n)");
                 do
@@ -172,15 +209,25 @@ namespace CalculatorLibrary
                         case "Division":
                             operationUsed = "/";
                             break;
+                        case "Square Root":
+                            operationUsed = "√";
+                            break;
                     }
-                    Console.WriteLine($"{i + 1}. {jsonList[i].Num1} {operationUsed} {jsonList[i].Num2} = {jsonList[i].Result}");
+                    if (operationUsed == "√")
+                    {
+                        Console.WriteLine($"{i + 1}. {operationUsed}{jsonList[i].Num1} = {jsonList[i].Result}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{i + 1}. {jsonList[i].Num1} {operationUsed} {jsonList[i].Num2} = {jsonList[i].Result}");
+                    }
+                    
                 }
             }
         }
 
         public double UseResultAsOperand()
         {
-            string? input = "";
             int chosenCalc = 0;
 
             Console.WriteLine("Enter the number at the left of the calculation of the result you wish to use.");

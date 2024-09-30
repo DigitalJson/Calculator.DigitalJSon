@@ -23,45 +23,51 @@ namespace CalculatorProgram
                 double cleanNum2 = 0;
                 bool num1AlreadyUsed = false;
                 bool num2AlreadyUsed = false;
+                bool previousCalculationsExist = File.Exists("calculation.json");
                 int chosenOperand = 0;
 
-                Console.WriteLine("Would you like to view the list? Type y and enter if yes and Type any other key and enter if no.");
-                input = Console.ReadLine();
-                if (input != null)
+
+                if (previousCalculationsExist)
                 {
-                    choice = input.Trim().ToLower();
-                    if (choice == "y")
+                    Console.WriteLine("Would you like to view the list? Type y and enter if yes and Type any other key and enter if no.");
+                    input = Console.ReadLine();
+                    if (input != null)
                     {
-                        calculator.ViewPreviousCalculations();
-                        Console.WriteLine("Would you like to use any of the results here for your calculation now? Type y if yes and any other key for no.");
-                        input = Console.ReadLine();
-                        if (input != null)
+                        choice = input.Trim().ToLower();
+                        if (choice == "y")
                         {
-                            choice = input.ToLower().Trim();
-                            if (choice == "y")
+                            calculator.ViewPreviousCalculations();
+                            Console.WriteLine("Would you like to use any of the results here for your calculation now? Type y if yes and any other key for no.");
+                            input = Console.ReadLine();
+                            if (input != null)
                             {
-                                previousResult = calculator.UseResultAsOperand();
-                                Console.WriteLine("Now please choose where you would like to place the result. Type 1 if Operand 1 or 2 if Operand 2");
-                                input = Console.ReadLine();
-                                while (!int.TryParse(input, out chosenOperand) || (chosenOperand > 2 || chosenOperand < 1))
+                                choice = input.ToLower().Trim();
+                                if (choice == "y")
                                 {
-                                    Console.WriteLine("Invalid input. Please type either 1 if Operand 1 or 2 if Operand 2");
+                                    previousResult = calculator.UseResultAsOperand();
+                                    Console.WriteLine("Now please choose where you would like to place the result. Type 1 if Operand 1 or 2 if Operand 2");
                                     input = Console.ReadLine();
-                                }
-                                if (chosenOperand == 1)
-                                {
-                                    cleanNum1 = previousResult;
-                                    num1AlreadyUsed = true;
-                                }
-                                else if (chosenOperand == 2)
-                                {
-                                    cleanNum2 = previousResult;
-                                    num2AlreadyUsed = true;
+                                    while (!int.TryParse(input, out chosenOperand) || (chosenOperand > 2 || chosenOperand < 1))
+                                    {
+                                        Console.WriteLine("Invalid input. Please type either 1 if Operand 1 or 2 if Operand 2");
+                                        input = Console.ReadLine();
+                                    }
+                                    if (chosenOperand == 1)
+                                    {
+                                        cleanNum1 = previousResult;
+                                        num1AlreadyUsed = true;
+                                    }
+                                    else if (chosenOperand == 2)
+                                    {
+                                        cleanNum2 = previousResult;
+                                        num2AlreadyUsed = true;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+               
                 // Declare variable and set to empty.
                 // Use Nullable types (with ?) to match type of System.Console.ReadLine
                 string? numInput1 = "";
@@ -100,12 +106,13 @@ namespace CalculatorProgram
                 Console.WriteLine("\ts - Subtract");
                 Console.WriteLine("\tm - Multiply");
                 Console.WriteLine("\td - Divide");
+                Console.WriteLine("\tsqr - Square Root");
                 Console.Write("Your option? ");
 
                 string? op = Console.ReadLine();
 
                 // Validate input is not null, and matches the pattern
-                if (op == null || !Regex.IsMatch(op, "[a|s|m|d]"))
+                if (op == null || !Regex.IsMatch(op, "[a|s|m|d|sqr]"))
                 {
                     Console.WriteLine("Error: Unrecognized input.");
                 }
@@ -133,8 +140,8 @@ namespace CalculatorProgram
                 if (Console.ReadLine() == "n") endApp = true;
 
                 Console.WriteLine("\n"); // Friendly linespacing.
+                calculator.SaveCalculationToJSon();
             }
-            calculator.SaveCalculationToJSon();
             return;
         }
     }
