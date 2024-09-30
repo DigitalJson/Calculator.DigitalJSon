@@ -154,37 +154,10 @@ namespace CalculatorLibrary
 
         public void LoadCalculationJson()
         {
-            if (File.Exists(jsonFileLoc))
-            {
-                string choice = "";
-                Console.WriteLine("List of previous calculations found. Would you like to use it? (y/n)");
-                do
-                {
-                    input = Console.ReadLine();
-                    if (input != null)
-                    {
-                        choice = input.ToLower();
-                        switch (choice)
-                        {
-                            case "y":
-                                Console.WriteLine("Using existing list...");
-                                string jsonFile = File.ReadAllText(jsonFileLoc);
-                                jsonList = JsonConvert.DeserializeObject<List<CalculationLog>>(jsonFile);
-                                break;
-                            case "n":
-                                DeleteJson();
-                                break;
-                            default:
-                                Console.WriteLine("Invalid input.");
-                                break;
-                        }
-                    }
-                } while (choice != "y" && choice != "n");
-               
-            }
-            
+            string jsonFile = File.ReadAllText(jsonFileLoc);
+            jsonList = JsonConvert.DeserializeObject<List<CalculationLog>>(jsonFile);
         }
-        private void DeleteJson()
+        public void DeleteJson()
         {
             File.Delete(jsonFileLoc);
             Console.WriteLine("File deleted successfully.");
