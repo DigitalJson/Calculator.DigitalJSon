@@ -62,12 +62,15 @@ namespace CalculatorProgram
                 Console.WriteLine("\te - Taking the power");
                 Console.WriteLine("\tsqr - Square Root");
                 Console.WriteLine("\t10x - 10 raised to x");
+                Console.WriteLine("\tsin - Sine function");
+                Console.WriteLine("\tcos - Cosine function");
+                Console.WriteLine("\ttan - Tangent function");
                 Console.Write("Your option? ");
 
                 string? op = Console.ReadLine();
 
                 // Validate input is not null, and matches the pattern
-                while (op == null || !Regex.IsMatch(op, "^(a|s|m|d|sqr|e|10x)$"))
+                while (op == null || !Regex.IsMatch(op, "^(a|s|m|d|sqr|e|10x|sin|cos|tan)$"))
                 {
                     Console.WriteLine("Error: Unrecognized input. Please try again.");
                     op = Console.ReadLine();
@@ -101,7 +104,7 @@ namespace CalculatorProgram
                             previousResultUsed = true;
                         }
                     }
-                    if (op == "sqr" || op == "10x")
+                    if (op == "sqr" || op == "10x" || op == "sin" || op == "cos" || op == "tan")
                     {
                         if (!previousResultUsed)
                         {

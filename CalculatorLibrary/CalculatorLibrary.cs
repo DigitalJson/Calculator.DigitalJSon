@@ -35,7 +35,6 @@ namespace CalculatorLibrary
             double result = double.NaN; // Default value is "not-a-number" if an operation, such as division, could result in an error.
             // Use a switch statement to do the math.
             string operationUsed = "";
-            int choice = 0;
             switch (op)
             {
                 case "a":
@@ -74,13 +73,25 @@ namespace CalculatorLibrary
                     result = Math.Pow(10, num1);
                     operationUsed = "10x";
                     break;
+                case "sin":
+                    result = Math.Sin(num1);
+                    operationUsed = "Sine Function";
+                    break;
+                case "cos":
+                    result = Math.Cos(num1);
+                    operationUsed = "Cosine Function";
+                    break;
+                case "tan":
+                    result = Math.Tan(num1);
+                    operationUsed = "Tangent Function";
+                    break;
                 // Return text for an incorrect option entry
                 default:
                     break;
             }
             if (!File.Exists(jsonFileLoc))
             {
-                if (operationUsed == "Square Root" || operationUsed == "10x")
+                if (operationUsed == "Square Root" || operationUsed == "10x" || operationUsed == "cos" || operationUsed == "sin" || operationUsed == "tan")
                 {
                     calcLogList.Add(new CalculationLog { Num1 = num1, Num2 = double.NaN, Operation = operationUsed, Result = result });
                 }
@@ -91,7 +102,7 @@ namespace CalculatorLibrary
             }
             else
             {
-                if (operationUsed == "Square Root" || operationUsed == "10x")
+                if (operationUsed == "Square Root" || operationUsed == "10x" || operationUsed == "cos" || operationUsed == "sin" || operationUsed == "tan")
                 {
                     jsonList.Add(new CalculationLog { Num1 = num1, Num2 = double.NaN, Operation = operationUsed, Result = result });
                 }
@@ -184,6 +195,15 @@ namespace CalculatorLibrary
                         case "10x":
                             operationUsed = "10^x";
                             break;
+                        case "Sine Function":
+                            operationUsed = "sin";
+                            break;
+                        case "Cosine Function":
+                            operationUsed = "cos";
+                            break;
+                        case "Tangent Function":
+                            operationUsed = "tan";
+                            break;
                     }
                     if (operationUsed == "√")
                     {
@@ -196,6 +216,10 @@ namespace CalculatorLibrary
                     else if (operationUsed == "10^x")
                     {
                         Console.WriteLine($"{i + 1}. 10^{jsonList[i].Num1} = {jsonList[i].Result}");
+                    }
+                    else if (operationUsed == "sin" || operationUsed == "cos" || operationUsed == "tan")
+                    {
+                        Console.WriteLine($"{i + 1}. {operationUsed}({jsonList[i].Num1}) = {jsonList[i].Result}");
                     }
                     else
                     {
