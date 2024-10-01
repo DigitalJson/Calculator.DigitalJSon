@@ -85,13 +85,13 @@ namespace CalculatorLibrary
                     result = Math.Tan(num1);
                     operationUsed = "Tangent Function";
                     break;
-                // Return text for an incorrect option entry
+                // Return text for an incorrect ption entry
                 default:
                     break;
             }
             if (!File.Exists(jsonFileLoc))
             {
-                if (operationUsed == "Square Root" || operationUsed == "10x" || operationUsed == "cos" || operationUsed == "sin" || operationUsed == "tan")
+                if (operationUsed == "Square Root" || operationUsed == "10x" || operationUsed == "Cosine Function" || operationUsed == "Sine Function" || operationUsed == "Tangent Function")
                 {
                     calcLogList.Add(new CalculationLog { Num1 = num1, Num2 = double.NaN, Operation = operationUsed, Result = result });
                 }
@@ -102,7 +102,7 @@ namespace CalculatorLibrary
             }
             else
             {
-                if (operationUsed == "Square Root" || operationUsed == "10x" || operationUsed == "cos" || operationUsed == "sin" || operationUsed == "tan")
+                if (operationUsed == "Square Root" || operationUsed == "10x" || operationUsed == "Cosine Function" || operationUsed == "Sine Function" || operationUsed == "Tangent Function")
                 {
                     jsonList.Add(new CalculationLog { Num1 = num1, Num2 = double.NaN, Operation = operationUsed, Result = result });
                 }
